@@ -1,0 +1,47 @@
+
+- hosts: windows
+  gather_facts: false
+  vars:
+
+# General configuration files variables
+    config_dir: C:\temp\
+    config_file: SqlConfig.ini
+    config_template_file: SqlConfig.ini.j2
+    config_path: "{{ config_dir }}{{ config_file }}"
+    java_exe_url: http://sdlc-esd.oracle.com/ESD6/JSCDL/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jre-8u131-windows-i586.exe?GroupName=JSC&FilePath=/ESD6/JSCDL/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jre-8u131-windows-i586.exe&BHost=javadl.sun.com&File=jre-8u131-windows-i586.exe&AuthParam=1493732901_bfa2603f4dfdc2018f89006d56ca3f67&ext=.exe
+    java_exe_file_name: jdk-8u131-windows-i586.exe
+    java_exe_file_path: "{{ config_dir }}{{ java_exe_file_name }}"
+    tomcat_exe_url: https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.35/bin/apache-tomcat-7.0.35.exe
+    tomcat_exe_file_name: apache-tomcat-7.0.35.exe
+    tomcat_exe_file_path: "{{ config_dir }}{{ tomcat_exe_file_name }}"
+    tomcat_config_file: server.xml
+    tomcat_template_file: server.xml.j2
+    tomcat_config_dir: C:\Program Files\Apache Software Foundation\tomcat_7.0.35\conf\
+    tomcat_config_path: "{{ tomcat_config_dir }}{{ tomcat_config_file }}"
+
+# MSSQL configuration variables
+    mssql_exe_file: SQLEXPR_x64_ENU.exe
+    mssql_exe_path: "{{ config_dir }}{{ mssql_exe_file }}" 
+    mssql_instance: MSSQL$MSSQLDUMMY
+    mssql_instance_name: MSSQLDUMMY
+    mssql_instance_id: MSSQLDUMMY
+    mssql_instance_dir: C:\Program Files\Microsoft SQL Server
+    mssql_agt_svc_account: WIN-EM0C2P14JF8\SQLSERVERAGENT
+    mssql_svc_account: Automic
+    mssql_sql_sysadmin_account: Automic
+    mssql_agt_svc_password: Password1
+    mssql_agent_password: Password1    
+    mssql_installed_shared_dir: C:\Program Files\Microsoft SQL Server
+    mssql_installed_shared_dir_owner: C:\Program Files (x86)\Microsoft SQL Server
+
+# Apache Tomcat configuration variables   
+    tomcat_instance: Tomcat7
+    tomcat_install_dir: C:\Program Files\Apache Software Foundation\tomcat_7.0.35
+    tomcat_connector_port: "9010"
+    tomcat_shutdown_port: "8016"
+    tomcat_ajp_port: "8014"
+
+  roles:
+   - install_mssql
+   - install_java
+   - install_tomcat

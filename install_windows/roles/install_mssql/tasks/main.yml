@@ -1,0 +1,36 @@
+---
+# tasks file for windows
+- name: Copy Install SQL file
+  win_get_url:
+    url: https://download.microsoft.com/download/8/D/D/8DD7BDBA-CEF7-4D8E-8C16-D9F69527F909/ENU/x64/SQLEXPR_x64_ENU.exe
+    dest: "{{ mssql_exe_path }}"
+    force: no
+
+- name: Checking existing MSSQL instance
+  win_command: "CMD /C powershell.exe \"Get-Service ^| Where-Object {$_.Name -like 'MSSQL$*'} ^| select -expand Name \""
+  register: install_out
+
+- debug: msg="{{ install_out.stdout.split('\r\n\') }}"
+
+- name: Create configuration directory
+  win_file:
+   path: "{{ config_dir }}"
+   state: directory
+
+- name: Copying ini configuration file
+  win_template: 
+    src: "{{ config_template_file }}"
+    dest: "{{ config_path }}"
+
+- name: Check if any MSSQL instance exists
+  win_command: "CMD /C powershell.exe \"Get-Service ^| Where-Object {$_.Name -like 'MSSQL$*'} ^| Measure-Object ^| select -expand Count\""
+  register: install_count
+
+- debug: msg="{{ install_count.stdout[0] }}"
+
+- name: Install MSSQL instance
+  when: (install_count.stdout[0]|int == 0) or (mssql_instance not in install_out.stdout.split('\r\n'))
+  win_command: 'CMD /C "{{ mssql_exe_path }}" /ConfigurationFile=\""{{ config_path }}" \"'
+  register: install_mssql
+
+- debug: msg="{{ install_mssql }}"

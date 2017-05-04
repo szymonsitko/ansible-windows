@@ -1,0 +1,28 @@
+---
+# tasks file for install_tomcat
+- name: Check if Java is installed
+#  win_command: "CMD /C powershell.exe \"(Get-WmiObject Win32_Product ^| Where {$_.Name -match 'Java SE Development Kit'}) ^| Measure-Object ^| select -expand Count \""i
+  win_command: "CMD /C powershell.exe \"(Get-WmiObject Win32_Product ^| Where {$_.Name -match 'Java 8'}).Version ^| Measure-Object ^| select -expand Count \""
+  register: java_instance
+
+- debug: msg="{{ java_instance.stdout_lines }}"
+
+- name: Checking installed version
+  win_command: "CMD /C powershell.exe \"(Get-WmiObject Win32_Product ^| Where {$_.Name -match 'Java 8'}) ^| select -expand Version \""
+  register: java_version
+
+- debug: msg="{{ java_version.stdout_lines[0] }}"
+
+- name: Download the Java exe install file
+  when: ("8.0" not in java_version.stdout_lines[0]) and (java_instance.stdout_lines|int == 0)
+  register: get_java_exe_file
+  win_get_url:
+    url: "{{ java_exe_url }}"
+    dest: "{{ java_exe_file_path }}"
+
+- debug: msg="{{ get_java_exe_file }}"
+
+- name: Install Java
+  when: ("8.0" not in java_version.stdout_lines[0]) and (java_instance.stdout_lines|int == 0)
+  win_command: 'CMD /C CMD "{{ java_exe_file_path }}" /s'
+

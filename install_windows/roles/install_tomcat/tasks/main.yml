@@ -1,0 +1,29 @@
+---
+# tasks file for install_tomcat
+- name: Check if a service is installed
+  win_service:
+    name: "{{ tomcat_instance }}"
+  register: existing_tomcat
+
+- debug: msg="{{ existing_tomcat }}"
+
+- name: Copy Tomcat exe installation files
+  when: (existing_tomcat['exists'] == false)
+  win_get_url:
+    url: "{{ tomcat_exe_url }}"
+    dest: "{{ tomcat_exe_file_path }}"
+    force: no
+  register: get_tomcat_exe_file
+
+- debug: msg="{{ get_tomcat_exe_file }}" 
+
+- name: Install Apache Tomcat as a service
+  when: (existing_tomcat['exists'] == false)
+  win_command: 'CMD /C "{{ tomcat_exe_file_path }}" /S /D="{{ tomcat_install_dir }}"'
+  register: install_tomcat_webserver
+  notify:
+   - Copy Tomcat configuration file
+   - Start Tomcat service
+
+- debug: msg="{{ install_tomcat_webserver }}"
+

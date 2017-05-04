@@ -1,0 +1,19 @@
+---
+# tasks file for uninstall_mssql
+- name: Copy Uninstall SQL file
+  win_get_url:
+    url: https://download.microsoft.com/download/8/D/D/8DD7BDBA-CEF7-4D8E-8C16-D9F69527F909/ENU/x64/SQLEXPR_x64_ENU.exe
+    dest: "{{ mssql_exe_path }}"
+    force: no
+
+
+- name: Remove MSSQL Express instance
+  win_command: 'CMD /C "{{ mssql_exe_path }}" /ACTION=UNINSTALL /QUIET="True" /FEATURES=SQL /INSTANCENAME="MSSQLDUMMY"'
+  ignore_errors: yes
+
+
+#- name: Reboot Windows Server
+#  win_reboot:
+#   reboot_timeout_sec: 0
+#   ignore_errors: yes
+

@@ -1,0 +1,13 @@
+---
+# handlers file for install_tomcat
+- name: Copy Tomcat configuration file
+  win_template: 
+    src: "{{ tomcat_template_file }}"
+    dest: "{{ tomcat_config_path }}"
+
+
+- name: Start Tomcat service
+  win_service:
+    name: "{{ tomcat_instance }}"
+    state: started
+

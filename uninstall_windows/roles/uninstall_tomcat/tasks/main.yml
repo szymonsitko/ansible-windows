@@ -1,0 +1,23 @@
+---
+# tasks file for uninstall_tomcat
+- name: Stop Tomcat service
+  win_service:
+    name: "{{ tomcat_instance }}" 
+    state: stopped
+  register: stop_tomcat_service
+
+- debug: msg="{{ stop_tomcat_service }}"
+
+- name: Delete the Apache Tomcat service
+  win_command: 'CMD /C sc delete "{{ tomcat_instance }}"'
+  register: remove_tomcat_service
+
+- debug: msg="{{ remove_tomcat_service.stdout_lines }}"
+
+- name: Delete the Apache Tomcat directory (binaries)
+  win_file:
+    path: "{{ tomcat_install_dir }}"
+    state: absent
+  register: remove_tomcat_binaries
+
+- debug: msg="{{ remove_tomcat_binaries }}"
